@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Memory</title>
+   
+</head>
+<body>
+  
+   
+  <h2>Memory</h2>
+  <div id="contenitoreCarte" style="width:50%;">
+    <!-- Qui verranno visualizzate le carte in tabella -->
+</div>
+
+<script>
+    // Abbiamo solo l'array delle carte iniziali (i quattro fanti)
+    let immagini = [
+        '../carte/11c.gif',
+        '../carte/11f.gif',
+        '../carte/11p.gif',
+        '../carte/11q.gif',
+        '../carte/11c.gif',
+        '../carte/11f.gif',
+        '../carte/11p.gif',
+        '../carte/11q.gif'
+    ];
+    //mescola le carte
+    for (i = immagini.length - 1; i > 0; i--) {
+    // Genera un indice casuale tra 0 e i
+     j = Math.floor(Math.random() * (i + 1));
+    //scambio per metterli nella posizione generata
+    temp = immagini[i];
+    immagini[i] = immagini[j];
+    immagini[j] = temp;
+}
+    carte = '<table width="50%"><tr>';
+    //Mette le carte sul tavolo girate, indicando anche l'immagine nascosta
+    for (let i = 0; i < immagini.length; i++) {
+        if(i==4) {carte += '</tr><tr>';}
+        carte += '<td>';
+    //data- indica un attributo nuovo
+         carte += '<img src="../carte/back.gif" data-carta="' + immagini[i] + '" onclick="controllo(this)" data-scoperta="no" style="cursor:pointer; width:100%;">';
+        carte += '</td>';
+    }
+    carte += '</tr></table>';
+     
+let c = document.getElementById("contenitoreCarte");
+   c.innerHTML = carte;
+//document.write(carte);
+    // inizio gioco indicando che per il momento non sono state girate carte
+    cartaGirata = 0;
+    trovato=0; //quando è uguale alla lunghezza dell'array/2 il gioco è finito
+    
+    // Funzione di scambio
+    function giraCarta(elementoCliccato) {
+      
+    // Legge la carta attualmente visibile ->la riconosce grazie a src
+      let cartaCorrente = elementoCliccato.src;
+      
+    // Legge la carta nascosta 
+      let cartaAlternativa = elementoCliccato.getAttribute("data-carta");
+        
+    // Scambio: mostra l'altra parte della carta
+       elementoCliccato.src = cartaAlternativa;
+        
+    // Salva la vecchia carta dentro 'data-carta' per tornare al prossimo click
+       elementoCliccato.setAttribute("data-carta", cartaCorrente);
+       if (elementoCliccato.getAttribute("data-scoperta")=="si")
+           {
+               elementoCliccato.setAttribute("data-scoperta","no");
+           }
+     else {
+         elementoCliccato.setAttribute("data-scoperta","si");
+     }
+    }
+   function controllo(elementoCliccato){
+    
+    if (elementoCliccato.getAttribute("data-scoperta")=="si") 
+      {
+          alert("Carta già scoperta");
+          return;
+      }
+    
+       else
+       {
+           giraCarta(elementoCliccato); 
+       if (cartaGirata==0) {
+        //memorizza carta e indica che ha girato 1 carta
+        cartaGirata=1;
+        primaCarta = elementoCliccato;//memorizza l'intero oggetto in primaCarta
+          }
+        else 
+          {
+        //confronta le due carte
+            
+            if (primaCarta.src!=elementoCliccato.src)
+              
+              { setTimeout(function() {
+                      
+                      giraCarta(elementoCliccato);
+                      giraCarta(primaCarta);
+                  }, 700);
+              }
+              else
+              {
+                 trovato++;    
+              }
+             cartaGirata=0;
+          }
+      }
+       if (trovato==immagini.length/2)
+           {
+               setTimeout(function() {
+                      alert("Hai vinto!!!");
+                      
+                  }, 700);
+               
+           }
+    }
+</script>
+
+</body>
+</html>
+

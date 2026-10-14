@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documenti</title>
+    <style>
+        #contenitore {
+            width: 300px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+        }
+    </style>
+</head>
+<body>
+    <h1>MEMORY</h1>
+    <div id="contenitore">
+
+    </div>
+    <script>
+         
+        let carteRovesciate = 0;
+        let primaCarta;
+        let secondaCarta;
+        let tentativi = 0;
+        let coppieTrovate = 0;
+
+        let carte = [
+            {id:114, img:'carte/14c.gif', coperta:true}, 
+            {id:111, img:'carte/11c.gif', coperta:true}, 
+            {id:112, img:'carte/12c.gif', coperta:true}, 
+            {id:113, img:'carte/13c.gif', coperta:true},
+
+            {id:1114, img:'carte/14c.gif', coperta:true}, 
+            {id:1111, img:'carte/11c.gif', coperta:true}, 
+            {id:1112, img:'carte/12c.gif', coperta:true},
+            {id:1113, img:'carte/13c.gif', coperta:true}, 
+        ];
+        
+        function controlla() {
+            console.log("CONTROLLA");
+
+            if(primaCarta.id == secondaCarta.id+1000 || primaCarta.id+1000 == secondaCarta.id) {
+                // sono uguali non coprirle
+                coppieTrovate++;
+            } else {
+                copri(primaCarta);
+                copri(secondaCarta);
+            }
+
+            tentativi++
+            carteRovesciate  = 0;
+            if(coppieTrovate === 4) {
+                alert("Hai trovato "+  coppieTrovate + " coppie con "+ tentativi + " tentativi");
+                window.location.reload();
+                
+            }
+        }
+
+        function copri(carta) {
+            if(carta.coperta===false) {
+                carta.coperta = true;
+                carta.vista.src = 'carte/back.gif';
+                return true;
+            }
+            return false;
+        }
+
+        function scopri(carta) {
+            if(carta.coperta) {
+                carta.coperta = false;
+                carta.vista.src = carta.img;
+                return true;
+            }
+            return false;
+        }
+
+        function clicca(e) {
+
+            if (carteRovesciate === 2)
+                return;
+
+            if(carteRovesciate === 0) {
+
+                primaCarta = carte.find(c => {
+                    // Usa ==
+                    return c.id == e.target.id;
+                });
+
+                if(scopri(primaCarta))
+                    carteRovesciate++;
+
+                return;
+
+            }
+            
+            if(carteRovesciate === 1) {
+                secondaCarta = carte.find(c => {
+                    // Usa ==
+                    return c.id == e.target.id;
+                });
+                
+                if(scopri(secondaCarta)) {
+                    carteRovesciate++;
+                    window.setTimeout(controlla, 1000);
+                }
+            
+                
+            }
+
+        }
+
+        function shuffle(carte) {
+            for(let i = carte.length-1; i >= 0; i--) {
+                let pos = Math.floor(Math.random()*i);
+                let tmp = carte[i];
+                carte[i] = carte[pos];
+                carte[pos] = tmp;
+            }
+            return carte;
+        }
+
+        let contenitore = document.getElementById('contenitore');
+        shuffle(carte);
+        for(let c of carte) {
+                let odiv =document.createElement("div");
+                let oimg =document.createElement("img");
+                oimg.addEventListener('click', clicca)
+                oimg.src = "carte/back.gif";
+                oimg.id = c.id;
+                odiv.appendChild(oimg);
+                c.vista = oimg;
+                contenitore.appendChild(odiv);
+        }
+        
+        
+    </script>
+    
+</body>
+</html>
